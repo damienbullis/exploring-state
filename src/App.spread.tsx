@@ -1,66 +1,53 @@
-import { useEffect, useMemo, useState } from "react";
+import { FC, InputHTMLAttributes, useCallback, useMemo, useState } from "react";
 
 import styles from "./App.module.sass";
+import initial from "./initial.data";
 
-const initial = {
-  name: "John",
-  age: 30,
-  isMarried: false,
-  address: {
-    street: "123 Main Street",
-    city: "New York",
-    state: "NY",
-    zip: "10001",
-  },
-  acounts: [
-    {
-      id: 1,
-      type: "checking",
-      balance: 100,
-    },
-    {
-      id: 2,
-      type: "savings",
-      balance: 200,
-    },
-  ],
+const Input: FC<InputHTMLAttributes<HTMLInputElement>> = (props) => {
+  return <input {...props} />;
 };
 
-function App() {
+const WithLabel = ({ label, children }: { label: string; children: any }) => (
+  <div className={styles.input} key={label}>
+    <label htmlFor={label}>{label}</label>
+    {children}
+  </div>
+);
+
+function AppSpread() {
   const [state, setState] = useState(initial);
 
-  const inputs = useMemo(
-    () => Object.keys(state) as (keyof typeof state)[],
-    [state]
-  );
-
+  const inputs = useMemo(() => {
+    console.log("inside useMemo");
+    return Object.keys(state) as (keyof typeof state)[];
+  }, []);
+  const handler = useCallback((v: string, input: string) => {
+    console.log("onChange", input, v);
+    setState({
+      ...state,
+      [input]: v,
+    });
+  }, []);
+  console.log({ state });
   return (
-    <div className={styles.App}>
-      <h1 className="_title">React State</h1>
-      <div className="wrap">
+    <div className={styles.card}>
+      <h2 className="_title">State using {`{ ... }`}</h2>
+      <div className={styles._inner}>
         {inputs.map((input) => (
-          <div className="input" key={input}>
-            <label className="_label" htmlFor={input}>
-              {input}
-            </label>
-            <input
+          <WithLabel key={input} label={input}>
+            <Input
               id={input}
               type="text"
               className="_input"
               value={`${state[input]}`}
               // set state with spread operator and no prevState
-              onChange={(e) => {
-                setState({
-                  ...state,
-                  [input]: e.target.value,
-                });
-              }}
+              onChange={(e) => handler(e.target.value, input)}
             />
-          </div>
+          </WithLabel>
         ))}
       </div>
     </div>
   );
 }
 
-export default App;
+export default AppSpread;
