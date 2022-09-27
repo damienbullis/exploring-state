@@ -1,4 +1,4 @@
-import { FC, InputHTMLAttributes, useCallback, useMemo, useState } from "react";
+import { FC, InputHTMLAttributes, useMemo, useState } from "react";
 
 import styles from "./App.module.sass";
 import initial from "./initial.data";
@@ -21,13 +21,6 @@ function AppSpread() {
     console.log("inside useMemo");
     return Object.keys(state) as (keyof typeof state)[];
   }, []);
-  const handler = useCallback((v: string, input: string) => {
-    console.log("onChange", input, v);
-    setState({
-      ...state,
-      [input]: v,
-    });
-  }, []);
   console.log({ state });
   return (
     <div className={styles.card}>
@@ -41,7 +34,13 @@ function AppSpread() {
               className="_input"
               value={`${state[input]}`}
               // set state with spread operator and no prevState
-              onChange={(e) => handler(e.target.value, input)}
+              onChange={(e) => {
+                console.log("onChange", input, e.target.value);
+                setState({
+                  ...state,
+                  [input]: e.target.value,
+                });
+              }}
             />
           </WithLabel>
         ))}
