@@ -15,13 +15,13 @@ Investigating different state patterns in `React`. To better understand rerender
 
 ## Getting Started
 
-#### Clone repo
+Clone repo
 
 ```bash
 git clone https://github.com/damienbullis/lw-devtools.git
 ```
 
-#### Install Dependencies
+Install Dependencies
 
 ```bash
 npm install
