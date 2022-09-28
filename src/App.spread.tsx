@@ -1,4 +1,5 @@
 import { FC, InputHTMLAttributes, useMemo, useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 import styles from "./App.module.sass";
 import initial from "./initial.data";
@@ -14,6 +15,14 @@ const WithLabel = ({ label, children }: { label: string; children: any }) => (
   </div>
 );
 
+let spreadMarkdown = "";
+const getMarkdown = async () => {
+  const response = await fetch("/stateSpread.md");
+  const text = await response.text();
+  spreadMarkdown = text;
+};
+getMarkdown();
+
 function AppSpread() {
   const [state, setState] = useState(initial);
 
@@ -21,10 +30,10 @@ function AppSpread() {
     console.log("inside useMemo");
     return Object.keys(state) as (keyof typeof state)[];
   }, []);
-  console.log({ state });
+  console.log({ state, spreadMarkdown });
   return (
     <div className={styles.card}>
-      <h2 className="_title">State using {`{ ... }`}</h2>
+      <ReactMarkdown className={styles.markdown} children={spreadMarkdown} />
       <div className={styles._inner}>
         {inputs.map((input) => (
           <WithLabel key={input} label={input}>
