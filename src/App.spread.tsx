@@ -1,4 +1,4 @@
-import { FC, InputHTMLAttributes, useMemo, useState } from "react";
+import { FC, InputHTMLAttributes, useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 import styles from "./App.module.sass";
@@ -15,25 +15,21 @@ const WithLabel = ({ label, children }: { label: string; children: any }) => (
   </div>
 );
 
-let spreadMarkdown = "";
-const getMarkdown = async () => {
-  const response = await fetch("/stateSpread.md");
-  const text = await response.text();
-  spreadMarkdown = text;
-};
-getMarkdown();
+// TODO:
+// add in some sort of hook to log to an array
+// that we can use to replace the console.logs
+// with UI indications to show when component is updating
+// something with react-spring?
 
-function AppSpread() {
+const AppSpread = ({ md }: { md: string }) => {
   const [state, setState] = useState(initial);
-
+  console.log("AppSpread Render");
   const inputs = useMemo(() => {
-    console.log("inside useMemo");
     return Object.keys(state) as (keyof typeof state)[];
   }, []);
-  console.log({ state, spreadMarkdown });
   return (
     <div className={styles.card}>
-      <ReactMarkdown className={styles.markdown} children={spreadMarkdown} />
+      <ReactMarkdown className={styles.markdown} children={md} />
       <div className={styles._inner}>
         {inputs.map((input) => (
           <WithLabel key={input} label={input}>
@@ -56,6 +52,6 @@ function AppSpread() {
       </div>
     </div>
   );
-}
+};
 
 export default AppSpread;
