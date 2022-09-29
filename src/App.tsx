@@ -7,14 +7,19 @@ function App() {
   const [spreadMarkdown] = useMarkdowns();
   return (
     <div className={styles.app}>
-      <div className={styles.info}></div>
-      <div className={styles.wrap}>
-        <div className={styles._controller}>
-          <button>left</button>
-          <button>right</button>
-        </div>
-        <AppSpread md={spreadMarkdown} />
+      <div className={styles._controller}>
+        {/* 
+            TODO: turn this into a component carousel
+            that can be used to switch between the different
+            implementations of the set state card components
+            <Carousel tabs={["Spread", "Prev"]}>
+            and internally controls the state of the active tab
+            with buttons to switch between the tabs
+          */}
+        <button>left</button>
+        <button>right</button>
       </div>
+      <AppSpread md={spreadMarkdown} />
     </div>
   );
 }
