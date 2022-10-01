@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 
-const ALL_MD = ["stateSpread.md"];
+const ALL_MD = [
+  "stateSpread.md",
+  "prevState.md",
+  "reducer.md",
+  "pubSub.md",
+  "context.md",
+];
 
 const getMarkdown = async (src: string) => {
   const response = await fetch(`/${src}`);

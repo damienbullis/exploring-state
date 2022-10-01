@@ -1,15 +1,16 @@
 import styles from "./App.module.sass";
+import AppPrev from "./App.prev";
 import AppSpread from "./App.spread";
 import Carousel from "./components/Carousel/Carousel";
-// import AppPrev from "./App.prev";
 import useMarkdowns from "./hooks/useMarkdowns";
 
 function App() {
-  const [spreadMarkdown] = useMarkdowns();
+  const [spreadMarkdown, prevState] = useMarkdowns();
   return (
     <div className={styles.app}>
       <Carousel>
         <AppSpread md={spreadMarkdown} />
+        <AppPrev md={prevState} />
       </Carousel>
     </div>
   );

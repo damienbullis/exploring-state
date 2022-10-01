@@ -1,4 +1,4 @@
-useState with spread operator
+publish & subscribe pattern
 
 ```js
 // todo
