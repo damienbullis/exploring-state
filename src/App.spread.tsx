@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 import styles from "./App.module.sass";
@@ -18,6 +18,20 @@ const AppSpread = ({ md }: { md: string }) => {
   const inputs = useMemo(() => {
     return Object.keys(state) as (keyof typeof state)[];
   }, []);
+
+  const handler = useCallback(
+    (e: ChangeEvent<HTMLInputElement>, input: keyof typeof state) => {
+      console.log("onChange", input, e.target.value);
+      if (e.target.type === "checkbox") {
+        setState({ ...state, [input]: e.target.checked });
+      } else if (e.target.type === "number") {
+        setState({ ...state, [input]: +e.target.value });
+      } else {
+        setState({ ...state, [input]: e.target.value });
+      }
+    },
+    []
+  );
   return (
     <div className={styles.card}>
       <ReactMarkdown className={styles.markdown} children={md} />
@@ -27,18 +41,7 @@ const AppSpread = ({ md }: { md: string }) => {
             <Input
               id={input}
               _value={state[input]}
-              // set state with spread operator and no prevState
-              onChange={(e) => {
-                // might want to turn into a useCallback
-                console.log("onChange", input, e.target.value);
-                if (e.target.type === "checkbox") {
-                  setState({ ...state, [input]: e.target.checked });
-                } else if (e.target.type === "number") {
-                  setState({ ...state, [input]: +e.target.value });
-                } else {
-                  setState({ ...state, [input]: e.target.value });
-                }
-              }}
+              onChange={(e) => handler(e, input)}
             />
           </WithLabel>
         ))}
