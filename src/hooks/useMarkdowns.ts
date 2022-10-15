@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 const ALL_MD = [
+  "singleState.md",
   "stateSpread.md",
   "prevState.md",
   "reducer.md",

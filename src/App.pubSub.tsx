@@ -3,6 +3,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -64,43 +65,95 @@ class Obs<T = unknown> {
     this.subs.forEach((sub) => sub(data));
   }
   subscribe(sub: (data: T) => void) {
+    // TODO: could refactor this into the getter to simplify
     this.subs.add(sub);
     return () => this.subs.delete(sub);
   }
 }
 
-const createStore = <typeData extends {}>(data: {
-  [key in keyof typeData]: typeData[key];
-}) =>
-  useMemo(() => {
-    console.log("STORE");
-    const mapped = Object.entries(data).map(([k, v]) => {
-      return [k, new Obs(v)];
+function SubInput<T extends string | number | boolean>({
+  sub,
+}: {
+  sub: Obs<T>;
+}) {
+  const initState = useMemo(() => sub.value, []);
+  const [state, setState] = useState<T>(initState);
+  useEffect(() => {
+    console.log("SUB INPUT");
+    const unSub = sub.subscribe((data: T) => {
+      console.log("SUB INPUT CHANGE", data);
+      setState(data);
     });
-    return Object.fromEntries(mapped) as {
-      [key in keyof typeData]: Obs<typeData[key]>;
+    return () => {
+      console.log("UNSUB INPUT");
+      unSub();
     };
   }, []);
+  const t = typeof state;
+  if (t === "string") {
+    return (
+      <input
+        value={state as string}
+        onChange={(e) => {
+          sub.value = e.target.value as T;
+        }}
+      />
+    );
+  }
+  if (t === "boolean") {
+    return (
+      <input
+        type="checkbox"
+        checked={state as boolean}
+        onChange={(e) => {
+          sub.value = e.target.checked as T;
+        }}
+      />
+    );
+  }
+  if (t === "number") {
+    return (
+      <input
+        type="number"
+        value={state as number}
+        onChange={(e) => {
+          sub.value = e.target.value as T;
+        }}
+      />
+    );
+  }
+  return <></>;
+}
+
+const createStore = <typeData extends {}>(data: {
+  [key in keyof typeData]: typeData[key];
+}) => {
+  console.log("STORE");
+  // TODO: add in recursive step to make this work for nested objects & arrays
+  const mapped = Object.entries(data).map(([k, v]) => {
+    return [k, new Obs(v)];
+  });
+  return Object.fromEntries(mapped) as {
+    [key in keyof typeData]: Obs<typeData[key]>;
+  };
+};
+
+const subs = createStore(initial);
 
 const AppPubSub = ({ md }: { md: string }) => {
-  const subs = createStore(initial);
-
-  const inputs = useMemo(() => {
-    return Object.keys(initial) as (keyof typeof initial)[];
-  }, []);
   return (
     <div className={styles.card}>
       <ReactMarkdown className={styles.markdown} children={md} />
       <div className={styles._inner}>
-        {inputs.map((input) => (
-          <WithLabel key={input} label={input}>
-            <Input
-              id={input}
-              _value={subs[input].value}
-              onChange={(e) => (subs[input].value = e.target.value)}
-            />
-          </WithLabel>
-        ))}
+        <WithLabel label={"Name"}>
+          <SubInput sub={subs.name} />
+        </WithLabel>
+        <WithLabel label={"Age"}>
+          <SubInput sub={subs.age} />
+        </WithLabel>
+        <WithLabel label={"Is Married?"}>
+          <SubInput sub={subs.isMarried} />
+        </WithLabel>
       </div>
     </div>
   );
