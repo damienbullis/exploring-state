@@ -67,7 +67,9 @@ class Obs<T = unknown> {
   subscribe(sub: (data: T) => void) {
     // TODO: could refactor this into the getter to simplify
     this.subs.add(sub);
-    return () => this.subs.delete(sub);
+    return () => {
+      this.subs.delete(sub);
+    };
   }
 }
 
@@ -81,13 +83,10 @@ function SubInput<T extends string | number | boolean>({
   useEffect(() => {
     console.log("SUB INPUT");
     const unSub = sub.subscribe((data: T) => {
-      console.log("SUB INPUT CHANGE", data);
+      console.log("SUB UPDATE", data);
       setState(data);
     });
-    return () => {
-      console.log("UNSUB INPUT");
-      unSub();
-    };
+    return unSub();
   }, []);
   const t = typeof state;
   if (t === "string") {

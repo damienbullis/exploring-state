@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 
 import styles from "./App.module.sass";
 import Input from "./components/shared/Input";
+import Markdown from "./components/shared/Markdown";
 import WithLabel from "./components/shared/WithLabel";
 import initial from "./initial.data";
 
@@ -32,7 +33,7 @@ const AppPrev = ({ md }: { md: string }) => {
   );
   return (
     <div className={styles.card}>
-      <ReactMarkdown className={styles.markdown} children={md} />
+      <Markdown md={md} />
       <div className={styles._inner}>
         {inputs.map((input) => (
           <WithLabel key={input} label={input}>
